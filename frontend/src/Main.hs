@@ -15,7 +15,6 @@ import qualified Reflex.Dom.Core
 import qualified Frontend.App                     as App
 import qualified Frontend.CSS as CSS
 
-
 warp :: IO ()
 warp = JSaddle.Warp.run 3911 $ Reflex.Dom.Core.mainWidgetWithHead headWidget App.app
 
@@ -45,6 +44,7 @@ headWidget = do
     , "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/divider.min.css"
     , "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/segment.min.css"
     , "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/list.min.css"
+    , "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/card.min.css"
     , "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/form.min.css"
     , "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/input.min.css"
     , "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/button.min.css"
