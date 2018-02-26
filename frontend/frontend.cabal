@@ -19,7 +19,11 @@ executable frontend
   ghc-options:         -Wall -O2 -threaded -rtsopts -with-rtsopts=-N
   -- other-extensions:    
   build-depends:       base >=4.9 && <4.11
+                     , clay
                      , common
+                     , jsaddle-warp
                      , reflex-dom
+                     , reflex-dom-core
+                     , text
   hs-source-dirs:      src
   default-language:    Haskell2010
