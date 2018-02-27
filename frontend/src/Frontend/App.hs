@@ -4,9 +4,7 @@
 module Frontend.App (app) where
 
 import           Control.Monad  (void)
-import           Data.Semigroup ((<>))
 import           Data.Text      (Text)
-import qualified Data.Text      as T
 
 import           Reflex.Dom
 
@@ -17,22 +15,21 @@ app = do
     elClass "i" "circular list alternate outline icon" $ blank
     text "ToDo List"
   -- List items
-  divClass "ui text container" $ do
-    divClass "ui segments" $ do
-      rec items <- foldDyn snoc initItems newItem
-          let indexedItems = fmap (zip [1..]) items
-          void $ simpleList indexedItems drawItem
-          newItem <- drawItemInput
-      return ()
+  divClass "ui text container" $ divClass "ui segments" $ do
+    rec items <- foldDyn snoc initItems newItem
+        divClass "ui segment" $
+          divClass "ui big ordered relaxed divided list" $ do
+            void $ simpleList items drawItem
+        newItem <- drawItemInput
+    return ()
   where
     initItems = [ "Send app store links to the FP meetup"
                 , "RSVP to the FP meetup"
                 , "Shower"
                 ]
 
-drawItem :: MonadWidget t m => Dynamic t (Int, Text) -> m ()
-drawItem itemD = void . dyn . ffor itemD $ \(ix, item) -> do
-  divClass "ui segment" $ text $ (T.pack $ show ix) <> ". " <> item
+drawItem :: MonadWidget t m => Dynamic t Text -> m ()
+drawItem = divClass "item" . divClass "content" . dynText
 
 drawItemInput :: MonadWidget t m => m (Event t Text)
 drawItemInput = divClass "ui segment fluid action input" $ do
