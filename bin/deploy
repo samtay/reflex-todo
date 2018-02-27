@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# in the future have this script deploy to ALL targets
+nix-build -o dist-ghcjs-result -A ghcjs.frontend
+
+tmpdir=$(mktemp -d)
+git clone --single-branch --branch gh-pages \
+    git@github.com:samtay/reflex-todo.git \
+    $tmpdir
+cp -R dist-ghcjs-result/bin/frontend.jsexe/* $tmpdir
+cd $tmpdir
+git add .
+git commit -m 'Update ghcjs build output' || {
+  echo "No changes to deploy"
+}
+git push
