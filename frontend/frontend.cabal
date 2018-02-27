@@ -21,7 +21,9 @@ executable frontend
   build-depends:       base >=4.9 && <4.11
                      , clay
                      , common
+                     , containers
                      , jsaddle-warp
+                     , reflex
                      , reflex-dom
                      , reflex-dom-core
                      , text
