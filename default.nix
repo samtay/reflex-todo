@@ -23,4 +23,8 @@
     ghc = ["common" "backend" "frontend"];
     ghcjs = ["common" "frontend"];
   };
+
+  tools = ghc: with ghc; [
+    ghcid
+  ];
 })

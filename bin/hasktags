@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -eu -o pipefail
+
+TAGS="frontend common backend ../reflex ../reflex-dom"
+
+echo "Generating tags for ${TAGS}..."
+nix-shell -p haskellPackages.hasktags --command "hasktags -b ${TAGS}"
+echo "Done!"
