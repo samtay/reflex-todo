@@ -10,6 +10,11 @@ import           Data.Text     (Text)
 import qualified Data.Text     as T
 import           Reflex.Dom
 
+data Item = Item
+  { _item_text :: Text
+  , _item_completed :: Bool
+  }
+
 app :: MonadWidget t m => m ()
 app = do
   -- Header
@@ -18,7 +23,7 @@ app = do
     text "ToDo List"
   -- List items
   divClass "ui text container" $ divClass "ui segments" $ do
-    rec items <- foldDyn ($) initItems $ leftmost [ mapSnoc <$> newItem
+    rec items <- foldDyn ($) initItems $ leftmost [ mapSnoc . mkItem <$> newItem
                                                   , applyMap <$> update
                                                   ]
         update <- divClass "ui segment" $
@@ -27,17 +32,18 @@ app = do
         newItem <- drawItemInput
     return ()
   where
-    initItems = Map.fromList $ zip [1..]
+    mkItem t = Item t False
+    initItems = Map.fromList $ zip [1..] $ fmap mkItem
       [ "Send app store links to the FP meetup"
       , "RSVP to the FP meetup"
       , "Shower"
       ]
 
-drawItem :: MonadWidget t m => k -> Dynamic t Text -> m (Event t (Maybe Text))
+drawItem :: MonadWidget t m => k -> Dynamic t Item -> m (Event t (Maybe Item))
 drawItem _ item = divClass "item" $ do
   (trashIcon, _) <- divClass "right floated content" $
     elClass' "i" "icon link trash alternate" blank
-  divClass "content" $ dynText item
+  divClass "content" $ dynText $ _item_text <$> item
   return $ Nothing <$ domEvent Click trashIcon
 
 drawItemInput :: MonadWidget t m => m (Event t Text)
