@@ -3,15 +3,19 @@
 {-# LANGUAGE RecursiveDo           #-}
 module Frontend.App (app) where
 
-import           Data.Map      (Map)
-import qualified Data.Map      as Map
-import           Data.Map.Misc (applyMap)
-import           Data.Text     (Text)
-import qualified Data.Text     as T
+import           Control.Monad  ((<=<))
+import           Data.Semigroup ((<>))
+
+import           Data.Map       (Map)
+import qualified Data.Map       as Map
+import           Data.Map.Misc  (applyMap)
+import           Data.Text      (Text)
+import qualified Data.Text      as T
+import           Reflex
 import           Reflex.Dom
 
 data Item = Item
-  { _item_text :: Text
+  { _item_text      :: Text
   , _item_completed :: Bool
   }
 
@@ -40,11 +44,18 @@ app = do
       ]
 
 drawItem :: MonadWidget t m => k -> Dynamic t Item -> m (Event t (Maybe Item))
-drawItem _ item = divClass "item" $ do
-  (trashIcon, _) <- divClass "right floated content" $
-    elClass' "i" "icon link trash alternate" blank
-  divClass "content" $ dynText $ _item_text <$> item
-  return $ Nothing <$ domEvent Click trashIcon
+drawItem _ item = switchHold never <=< dyn . ffor item $ \(Item txt completed) -> do
+  divClass ("item" <> if completed then " completed" else "") $ do
+    (complete, delete) <- divClass "right floated content" $ do
+      complete' <- if completed then return never else fmap (domEvent Click . fst) $
+        elClass' "i" "icon link check teal" blank
+      delete' <- if not completed then return never else fmap (domEvent Click . fst) $
+        elClass' "i" "icon link trash alternate" blank
+      return (complete', delete')
+    divClass "content" $ text txt
+    return $ leftmost [ Just (Item txt True) <$ complete
+                      , Nothing <$ delete
+                      ]
 
 drawItemInput :: MonadWidget t m => m (Event t Text)
 drawItemInput = divClass "ui segment fluid action input" $ do
