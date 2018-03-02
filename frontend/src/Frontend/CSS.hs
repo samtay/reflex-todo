@@ -13,6 +13,14 @@ mainStylesheet = do
   body ? do
     color "#586e75"
     backgroundColor "#eeeeee"
+    display flex
+    flexDirection column
+    minHeight (vh 100)
+  ".main" ?
+    flexGrow 1
+  ".footer" ? do
+    paddingTop (px 8)
+    paddingBottom (px 8)
   "h2.ui.center.aligned.icon.header" ? do
     paddingTop (px 20)
     color "#586e75"
