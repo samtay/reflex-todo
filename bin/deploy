@@ -4,6 +4,7 @@ set -euo pipefail
 # in the future have this script deploy to ALL targets
 nix-build -o dist-ghcjs-result -A ghcjs.frontend
 
+ref=$(git rev-parse --short HEAD)
 tmpdir=$(mktemp -d)
 git clone --single-branch --branch gh-pages \
     git@github.com:samtay/reflex-todo.git \
@@ -11,7 +12,7 @@ git clone --single-branch --branch gh-pages \
 cp -R dist-ghcjs-result/bin/frontend.jsexe/* $tmpdir
 cd $tmpdir
 git add .
-git commit -m 'Update ghcjs build output' || {
+git commit -m "Update ghcjs build output - $ref" || {
   echo "No changes to deploy"
 }
 git push
