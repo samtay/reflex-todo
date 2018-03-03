@@ -1,6 +1,9 @@
 {}:
 
 (import ./reflex-platform {}).project ({ pkgs, ... }: {
+
+  name = "reflex-todo";
+
   packages = {
     common = ./common;
     backend = ./backend;
@@ -9,14 +12,14 @@
 
   android.frontend = {
     executableName = "frontend";
-    applicationId = "org.example.frontend";
-    displayName = "Example Android App";
+    applicationId = "samtay.reflex.todo";
+    displayName = "Reflex Todo Demo";
   };
 
   ios.frontend = {
     executableName = "frontend";
-    bundleIdentifier = "org.example.frontend";
-    bundleName = "Example iOS App";
+    bundleIdentifier = "samtay.reflex.todo";
+    bundleName = "Reflex Todo Demo";
   };
 
   shells = {
