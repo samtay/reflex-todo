@@ -11,15 +11,17 @@ cabal-version:       >=1.10
 executable frontend
   main-is:             Main.hs
   ghc-options:         -Wall -O2 -threaded -rtsopts -with-rtsopts=-N
-  -- other-extensions:    
-  build-depends:       base >=4.9 && <4.11
-                     , clay
-                     , common
-                     , containers
-                     , jsaddle-warp
-                     , reflex
-                     , reflex-dom
-                     , reflex-dom-core
-                     , text
   hs-source-dirs:      src
   default-language:    Haskell2010
+  build-depends:
+      base >=4.9 && <4.11
+    , clay
+    , common
+    , containers
+    , reflex
+    , reflex-dom
+    , text
+  if !os(android-linux)
+    build-depends:
+        jsaddle-warp
+      , reflex-dom-core

@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP                   #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE RankNTypes            #-}
@@ -8,15 +9,14 @@ module Main where
 import           Data.Semigroup                   ((<>))
 
 import qualified Data.Text                        as T
-import qualified Language.Javascript.JSaddle.Warp as JSaddle.Warp
 import           Reflex.Dom
+#ifdef MIN_VERSION_jsaddle_warp
+import qualified Language.Javascript.JSaddle.Warp as JSaddle.Warp
 import qualified Reflex.Dom.Core
+#endif
 
 import qualified Frontend.App                     as App
-import qualified Frontend.CSS as CSS
-
-warp :: IO ()
-warp = JSaddle.Warp.run 3911 $ Reflex.Dom.Core.mainWidgetWithHead headWidget App.app
+import qualified Frontend.CSS                     as CSS
 
 main :: IO ()
 main = Reflex.Dom.mainWidgetWithHead headWidget App.app
@@ -51,3 +51,8 @@ headWidget = do
     , "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/icon.min.css"
     ]
   CSS.inlineClay CSS.mainStylesheet
+
+#ifdef MIN_VERSION_jsaddle_warp
+warp :: IO ()
+warp = JSaddle.Warp.run 3911 $ Reflex.Dom.Core.mainWidgetWithHead headWidget App.app
+#endif
