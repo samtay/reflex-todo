@@ -42,9 +42,9 @@ app = do
       return ()
   -- Footer
   divClass "footer" $ divClass "ui center aligned container" $ do
-      elAttr "a" ("href" =: "https://github.com/samtay/reflex-todo") $
-        elAttr "button" ("class" =: "ui circular icon basic button") $ do
-          elClass "i" "github icon" blank
+    elAttr "a" ("href" =: "https://github.com/samtay/reflex-todo" <> "target" =: "_blank") $
+      elAttr "button" ("class" =: "ui circular icon basic button") $ do
+        elClass "i" "github icon" blank
   where
     mkItem t = Item t False
     initItems = Map.fromList $ zip [1..] $ fmap mkItem
@@ -83,9 +83,3 @@ mapSnoc :: a -> Map Int a -> Map Int a
 mapSnoc a xs = case Map.toDescList xs of
                  (k, _) : _ -> Map.insert (succ k) a xs
                  _          -> Map.singleton 1 a
-
--- TODO
--- 1. Use 'shake' animation for deleting an item in edit mode
--- 2. Use 'glow' or 'bounce' or something for new item
--- 3. Use 'pulse' for showing new edits
--- 4. Shit that requires jquery
