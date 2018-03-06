@@ -14,10 +14,7 @@ import qualified Data.Text      as T
 import           Reflex
 import           Reflex.Dom
 
-data Item = Item
-  { _item_text      :: Text
-  , _item_completed :: Bool
-  }
+import           Common.Types
 
 app :: MonadWidget t m => m ()
 app = do
