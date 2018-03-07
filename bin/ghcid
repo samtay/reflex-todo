@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
 set -eu
 
-nix-shell default.nix -A shells.ghc --add-root ./dist-newstyle/gc-roots/gc-root --indirect --run "ghcid -W -c'ghci -O0 -Wall -XNoNondecreasingIndentation -icommon/src -ifrontend/src Main'"
+case "$1" in
+  b|backend) package="backend"  ;;
+  *)         package="frontend" ;;
+esac
+
+nix-shell default.nix -A shells.ghc --run "ghcid -W --restart=$package/$package.cabal -c'ghci -O0 -Wall -XNoNondecreasingIndentation -icommon/src -i$package/src Main'"
