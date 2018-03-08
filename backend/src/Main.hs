@@ -1,8 +1,12 @@
-{-# LANGUAGE OverloadedStrings #-}
 module Main where
 
-import Backend.Server (runServer)
+import           Backend.App    (app)
+import           Backend.Data   (openState)
+import           Backend.Server (runServer)
 
--- TODO Run db stuff here (groundhog? checkout something else?)
 main :: IO ()
-main = runServer 3000
+main = do
+  state <- openState
+  runServer 3000 (app state)
+
+-- TODO Refactor to have an initApp todoState serverState etc that starts up a monad transformer
