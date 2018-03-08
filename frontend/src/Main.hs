@@ -1,4 +1,5 @@
 {-# LANGUAGE CPP                   #-}
+{-# LANGUAGE LambdaCase            #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE RankNTypes            #-}
@@ -17,9 +18,25 @@ import qualified Reflex.Dom.Core
 
 import qualified Frontend.App                     as App
 import qualified Frontend.CSS                     as CSS
+import qualified Frontend.Static                  as Static
 
 main :: IO ()
-main = Reflex.Dom.mainWidgetWithHead headWidget App.app
+main = Reflex.Dom.mainWidgetWithHead headWidget appBody
+
+appBody :: MonadWidget t m => m ()
+appBody = do -- Start up ws connection, create dynamic, if conn drops use static
+  let items = constDyn mempty
+      connected = constDyn False -- TODO Create ConnectionStatus = 1 | 2 | 3
+                                 -- Corresponding to connected, loading, failed (display static with err msg)
+                                 -- holdUniqDyn obvi
+  widgetHold_ (App.app items) $ ffor (updated connected) $ \case
+    True -> App.app items
+    False -> Static.app
+
+#ifdef MIN_VERSION_jsaddle_warp
+warp :: IO ()
+warp = JSaddle.Warp.run 3911 $ Reflex.Dom.Core.mainWidgetWithHead headWidget appBody
+#endif
 
 headWidget :: MonadWidget t m => m ()
 headWidget = do
@@ -32,27 +49,16 @@ headWidget = do
                                       , "user-scalable=no"
                                       ]
     ) blank
-  mapM_ (\h -> elAttr "link" ("rel" =: "stylesheet" <> "href" =: h) blank)
-    [ -- "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/semantic.min.css"
-      "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/reset.min.css"
-    , "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/site.min.css"
-    , "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/container.min.css"
-    , "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/grid.min.css"
-    , "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/header.min.css"
-    , "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/image.min.css"
-    , "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/menu.min.css"
-    , "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/divider.min.css"
-    , "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/segment.min.css"
-    , "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/list.min.css"
-    , "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/card.min.css"
-    , "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/form.min.css"
-    , "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/input.min.css"
-    , "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/button.min.css"
-    , "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/icon.min.css"
-    ]
   CSS.inlineClay CSS.mainStylesheet
-
-#ifdef MIN_VERSION_jsaddle_warp
-warp :: IO ()
-warp = JSaddle.Warp.run 3911 $ Reflex.Dom.Core.mainWidgetWithHead headWidget App.app
-#endif
+  mapM_ includeSemantic [ "reset" , "site" , "container" , "grid"
+                        , "header" , "image" , "menu" , "divider"
+                        , "segment" , "list" , "card" , "form"
+                        , "input" , "button" , "icon"
+                        ]
+  where
+    includeSemantic component =
+      let url = mconcat [ "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/"
+                        , component
+                        , ".min.css"
+                        ]
+      in elAttr "link" ("rel" =: "stylesheet" <> "href" =: url) blank

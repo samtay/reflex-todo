@@ -22,6 +22,8 @@ data TodoDb = TodoDb
   { _todoDb_items :: IntMap Item
   } deriving (Typeable)
 
+-- TODO Make all "Update"s return relevant data so we can issue smaller ws updates
+
 -- | Open state by resuming log or starting with empty list
 openState :: IO (AcidState TodoDb)
 openState = openLocalState (TodoDb IntMap.empty)
