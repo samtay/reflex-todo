@@ -27,7 +27,7 @@ runServer :: Int -> AppRunner -> IO ()
 runServer port app = do
   state <- Concurrent.newMVar IntMap.empty
   Warp.run port $ Wai.WS.websocketsOr
-    WS.defaultConnectionOptions -- ^ Options define what to do on pong
+    WS.defaultConnectionOptions -- ^ Compression disabled / lenient unicode decoding
     (wsApp app state)           -- ^ App for websocket requests
     httpApp                     -- ^ App for non-websocket requests
 

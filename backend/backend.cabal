@@ -18,5 +18,11 @@ executable backend
     , acid-state
     , common
     , containers
+    , http-types
+    , mtl
     , safecopy
     , text
+    , wai
+    , wai-websockets
+    , warp
+    , websockets
