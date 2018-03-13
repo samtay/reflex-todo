@@ -1,9 +1,10 @@
 {-# LANGUAGE DeriveGeneric #-}
 module Common.Types where
 
+import           GHC.Generics (Generic)
+
 import           Data.Aeson   (FromJSON (..), ToJSON (..))
 import           Data.Text    (Text)
-import           GHC.Generics (Generic)
 
 data Item = Item
   { _item_text      :: Text

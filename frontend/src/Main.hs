@@ -9,6 +9,7 @@ module Main where
 
 import           Data.Semigroup                   ((<>))
 
+import           Control.Monad.Reader             (asks)
 import qualified Data.Text                        as T
 import           Reflex.Dom
 #ifdef MIN_VERSION_jsaddle_warp
@@ -19,24 +20,24 @@ import qualified Reflex.Dom.Core
 import qualified Frontend.App                     as App
 import qualified Frontend.CSS                     as CSS
 import qualified Frontend.Static                  as Static
+import           Frontend.Env
 
 main :: IO ()
 main = Reflex.Dom.mainWidgetWithHead headWidget appBody
-
-appBody :: MonadWidget t m => m ()
-appBody = do -- Start up ws connection, create dynamic, if conn drops use static
-  let items = constDyn mempty
-      connected = constDyn False -- TODO Create ConnectionStatus = 1 | 2 | 3
-                                 -- Corresponding to connected, loading, failed (display static with err msg)
-                                 -- holdUniqDyn obvi
-  widgetHold_ (App.app items) $ ffor (updated connected) $ \case
-    True -> App.app items
-    False -> Static.app
-
+-- TODO away with this, use Reflex.Dom.Internal.run which already handles per-platform startup
 #ifdef MIN_VERSION_jsaddle_warp
 warp :: IO ()
 warp = JSaddle.Warp.run 3911 $ Reflex.Dom.Core.mainWidgetWithHead headWidget appBody
 #endif
+
+appBody :: MonadWidget t m => m ()
+appBody = runApp $ do
+  connection <- asks _todoEnv_connection
+  requestDynEvt <- widgetHold App.app $ ffor (updated connection) $ \case
+    Connection_Disconnected -> Static.app >> return never
+    _                       -> App.app
+  return . switch . current $ requestDynEvt
+
 
 headWidget :: MonadWidget t m => m ()
 headWidget = do

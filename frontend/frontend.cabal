@@ -15,13 +15,16 @@ executable frontend
   default-language:    Haskell2010
   build-depends:
       base >=4.9 && <4.11
+    , aeson
     , clay
     , common
     , containers
+    , lens
+    , mtl
     , reflex
     , reflex-dom
+    , reflex-dom-core
     , text
   if !os(android-linux)
     build-depends:
         jsaddle-warp
-      , reflex-dom-core

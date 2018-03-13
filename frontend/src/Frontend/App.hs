@@ -9,11 +9,15 @@ import qualified Data.Map       as Map
 import           Reflex
 import           Reflex.Dom
 
+import           Common.Request
 import           Common.Types
+import           Frontend.Env
 import           Frontend.Item
 
-app :: MonadWidget t m => Dynamic t (Map Int Item) -> m ()
-app items = do
+-- TODO if entire list update screws up scrolling, try 'listWithKeyShallowDiff'
+app :: TodoWidget t m (Event t TodoRequest)
+app = do
+  let items = pure mempty
   divClass "main" $ do
     -- Header
     elClass "h2" "ui center aligned icon header" $ do
@@ -38,3 +42,5 @@ app items = do
     elAttr "a" ("href" =: "https://github.com/samtay/reflex-todo" <> "target" =: "_blank") $
       elAttr "button" ("class" =: "ui circular icon basic button") $ do
         elClass "i" "github icon" blank
+
+  return never
