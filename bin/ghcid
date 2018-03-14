@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -eu
 
 case "$1" in
   b|backend) package="backend"  ;;

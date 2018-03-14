@@ -38,7 +38,7 @@ data TodoEnv t = TodoEnv
 
 -- | Run our main TodoWidget by creating the environment for it
 -- TODO buffer requests while connection is closed
--- TODO let ws url be maybe lookupEnv
+-- TODO let ws url be fromMaybe "localhost" <$> lookupEnv "TODO_HOST_URL" ++ ws://:3000
 -- TODO don't use reconnect == True, just handle this ourselves!
       -- -- actually this doesnt seem to work even when false..
 runApp

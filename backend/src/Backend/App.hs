@@ -1,15 +1,23 @@
-module Backend.App (app) where
+module Backend.App where
 
+import           Control.Concurrent.STM.TChan
+import           Control.Monad.Reader
 import           Data.Acid
-import qualified Network.WebSockets as WS
+import qualified Network.WebSockets           as WS
 
 import           Backend.Data
-import           Backend.Server
+import           Common.Request               (TodoListen)
 
-app
-  :: AcidState TodoDb -- ^ Todo database
-  -> NetworkState -- ^ Reference to all open WS connections
-  -> Int -- ^ This connection client ID
-  -> WS.Connection -- ^ This connection
-  -> IO ()
-app state conns clientId conn = undefined
+type App = ReaderT AppState IO
+
+data AppState = AppState
+  { _appState_connection :: WS.Connection
+  , _appState_todoDb     :: AcidState TodoDb
+  , _appState_broadcast  :: TChan TodoListen -- ^ Send updates
+  , _appState_listen     :: TChan TodoListen -- ^ Receive updates
+  }
+
+app :: App ()
+app = undefined
+  -- Listen for requests from this client
+  -- Listen for state updates from other clients

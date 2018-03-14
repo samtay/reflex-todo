@@ -14,6 +14,7 @@ import           Reflex.Dom
 import           Common.Types
 import           Frontend.Item
 
+-- TODO add a permanent error message explaining non-persistent
 app :: MonadWidget t m => m ()
 app = do
   divClass "main" $ do

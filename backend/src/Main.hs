@@ -4,9 +4,9 @@ import           Backend.App    (app)
 import           Backend.Data   (openState)
 import           Backend.Server (runServer)
 
+-- TODO fix module weirdness, app should be passed to server
 main :: IO ()
 main = do
-  state <- openState
-  runServer 3000 (app state)
-
--- TODO Refactor to have an initApp todoState serverState etc that starts up a monad transformer
+  state <- openState -- TODO does this need to be in IORef / MVar ???
+  broadcast <- newBroadcastTChan
+  runServer 3000 state broadcast
