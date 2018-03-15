@@ -5,23 +5,18 @@ module Backend.Server
 
 import           Control.Monad                  ((>=>))
 
-import qualified Control.Concurrent.MVar        as Concurrent
 import           Control.Concurrent.STM         (atomically)
--- TODO upgrade to stm-2.4.5.0 to use newBroadcastTChan
-import           Control.Concurrent.STM.TChan
-import           Control.Monad.Reader
+import           Control.Concurrent.STM.TChan   (TChan, dupTChan)
+import           Control.Monad.Reader           (runReaderT)
 import           Data.Acid                      (AcidState)
-import           Data.IntMap                    (IntMap)
-import qualified Data.IntMap                    as IntMap
 import qualified Network.HTTP.Types             as Http
 import qualified Network.Wai                    as Wai
 import qualified Network.Wai.Handler.Warp       as Warp
 import qualified Network.Wai.Handler.WebSockets as Wai.WS
 import qualified Network.WebSockets             as WS
 
-import           Backend.App
+import           Backend.App                    (AppState (..), app)
 import           Backend.Data                   (TodoDb)
-import           Backend.Util                   (mapSnoc)
 import           Common.Request                 (TodoListen)
 
 -- | Run server on given port (websocket + http)
@@ -56,4 +51,3 @@ makeClient state broadcast conn = do
                     , _appState_broadcast = broadcast
                     , _appState_listen = listener
                     }
-

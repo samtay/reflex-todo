@@ -1,8 +1,11 @@
-module Backend.App where
+module Backend.App
+  ( app
+  , AppState(..)
+  ) where
 
-import           Control.Concurrent.STM.TChan
-import           Control.Monad.Reader
-import           Data.Acid
+import           Control.Concurrent.STM.TChan (TChan)
+import           Control.Monad.Reader         (ReaderT)
+import           Data.Acid                    (AcidState)
 import qualified Network.WebSockets           as WS
 
 import           Backend.Data
