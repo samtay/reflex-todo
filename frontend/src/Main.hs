@@ -67,11 +67,11 @@ headWidget = do
 
 withListHeader :: MonadWidget t m => m a -> m a
 withListHeader listWidget =
-  divClass "main" $
+  divClass "main" $ do
     elClass "h2" "ui center aligned icon header" $ do
       elClass "i" "circular list alternate outline icon" $ blank
       text "ToDo List"
-      listWidget
+    listWidget
 
 footer :: MonadWidget t m => m ()
 footer =
