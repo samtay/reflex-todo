@@ -43,7 +43,7 @@ data TodoEnv t = TodoEnv
       -- -- actually this doesnt seem to work even when false..
 runApp
   :: (MonadWidget t m)
-  => TodoWidget t m (Event t TodoRequest)
+  => TodoWidget t m (Event t [TodoRequest])
   -> m ()
 runApp app = do
   rec ws <- WS.jsonWebSocket "/" $ def { _webSocketConfig_send = encodeUp <$> request
@@ -58,8 +58,8 @@ runApp app = do
       request <- runReaderT app env
   return ()
   where
-    encodeUp :: TodoRequest -> [WebSocketDataUp]
-    encodeUp = (: []) . WebSocketDataUp_Request
+    encodeUp :: [TodoRequest] -> [WebSocketDataUp]
+    encodeUp = fmap WebSocketDataUp_Request
 
     decodeDown :: Prism' WebSocketDataDown a -> Maybe WebSocketDataDown -> Maybe a
     decodeDown prism mdown = mdown >>= (^? prism)
