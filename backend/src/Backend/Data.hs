@@ -1,32 +1,46 @@
-{-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE TemplateHaskell    #-}
-{-# LANGUAGE TypeFamilies       #-}
+{-# LANGUAGE DeriveDataTypeable    #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TemplateHaskell       #-}
+{-# LANGUAGE TypeFamilies          #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 -- Note this is my own orphan, but I'm avoiding TH in common
 module Backend.Data where
 
-import           Control.Monad.Reader (ask)
-import           Control.Monad.State  (modify)
+import           Control.Monad.IO.Class (MonadIO (..))
+import           Control.Monad.Reader   (ask)
+import           Control.Monad.State    (modify)
 import           Data.Typeable
 
-import           Data.Acid
-import           Data.IntMap          (IntMap)
-import qualified Data.IntMap          as IntMap
-import           Data.SafeCopy        (base, deriveSafeCopy)
-import           Data.Text            (Text)
+import           Data.Acid              hiding (query, update)
+import qualified Data.Acid              as Acid
+import           Data.IntMap            (IntMap)
+import qualified Data.IntMap            as IntMap
+import           Data.SafeCopy          (base, deriveSafeCopy)
+import           Data.Text              (Text)
 
-import           Backend.Util         (mapSnoc)
+import           Backend.Util           (mapSnoc)
 import           Common.Types
 
 data TodoDb = TodoDb
   { _todoDb_items :: IntMap Item
   } deriving (Typeable)
 
--- TODO Make all "Update"s return relevant data so we can issue smaller ws updates
+class MonadIO m => HasAcidState db m where
+  askDb :: m (AcidState db)
+  withDb :: (AcidState db -> IO ()) -> m ()
+  withDb f = askDb >>= liftIO . f
 
--- | Open state by resuming log or starting with empty list
-openState :: IO (AcidState TodoDb)
-openState = openLocalState (TodoDb IntMap.empty)
+query :: (EventState event ~ db, HasAcidState db m, QueryEvent event)
+      => event
+      -> m (EventResult event)
+query q = askDb >>= liftIO . \db -> Acid.query db q
+
+update :: (EventState event ~ db, HasAcidState db m, UpdateEvent event)
+      => event
+      -> m (EventResult event)
+update u = askDb >>= liftIO . \db -> Acid.update db u
+
+-- TODO Make all "Update"s return relevant data so we can issue smaller ws updates
 
 -- | Query for all todo items
 allItems :: Query TodoDb (IntMap Item)

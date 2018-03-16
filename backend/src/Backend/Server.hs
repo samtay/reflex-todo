@@ -22,10 +22,10 @@ import           Common.Request                 (TodoListen)
 -- | Run server on given port (websocket + http)
 runServer
   :: Int
-  -> AcidState TodoDb
   -> TChan TodoListen
+  -> AcidState TodoDb
   -> IO ()
-runServer port state broadcast = do
+runServer port broadcast state = do
   Warp.run port $ Wai.WS.websocketsOr
     WS.defaultConnectionOptions -- Compression disabled / lenient unicode decoding
     (WS.acceptRequest >=> makeClient state broadcast >=> runReaderT app) -- App for websocket requests

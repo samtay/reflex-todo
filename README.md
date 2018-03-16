@@ -1,6 +1,8 @@
 # todo
 
-1. Override stm to latest
+1. Move broadcast/db out of ClientState and into parent. Then have typeclass for easily issuing update out to parent thread. The parent thread returns the TodoResponse to the requesting client thread, and broadcasts the new patch to all clients. (Also need to update db funcs to return patches)
+2. Get code into the right damn modules.
+
 2. Perhaps capture slides of some backend / common code
 3. Show some of the new glue on the frontend
 4. Show new frontend app code

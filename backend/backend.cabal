@@ -16,11 +16,13 @@ executable backend
   build-depends:
       base >=4.9 && <4.11
     , acid-state
+    , aeson
     , common
     , containers
     , http-types
     , mtl
     , safecopy
+    , stm
     , text
     , wai
     , wai-websockets
