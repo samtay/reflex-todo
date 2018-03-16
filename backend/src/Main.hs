@@ -1,13 +1,19 @@
 module Main where
 
-import           Control.Concurrent.STM (atomically, newBroadcastTChan)
+import           Control.Exception      (bracket)
 
-import           Backend.Data           (openState)
+import           Control.Concurrent.STM (atomically, newBroadcastTChan)
+import qualified Data.Acid.Local        as Acid
+
+import           Backend.Data           (TodoDb (..))
 import           Backend.Server         (runServer)
 
 -- TODO fix module weirdness, app should be passed to server
+  -- TODO does state need to be in IORef / MVar ???
 main :: IO ()
 main = do
-  state <- openState -- TODO does this need to be in IORef / MVar ???
   broadcast <- atomically newBroadcastTChan
-  runServer 3000 state broadcast
+  bracket
+    (Acid.openLocalState (TodoDb mempty))
+    Acid.createCheckpointAndClose
+    (runServer 3000 broadcast)
