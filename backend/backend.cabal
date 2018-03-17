@@ -20,6 +20,7 @@ executable backend
     , common
     , containers
     , http-types
+    , lens
     , mtl
     , safecopy
     , stm
