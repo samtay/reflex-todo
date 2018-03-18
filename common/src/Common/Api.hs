@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GADTs         #-}
 {-# LANGUAGE LambdaCase    #-}
-module Common.Request where
+module Common.Api where
 
 import           GHC.Generics           (Generic)
 

@@ -17,7 +17,7 @@ import           Control.Lens          (Prism', (^?))
 import           Reflex.Dom.Core
 import           Reflex.Dom.WebSocket  as WS
 
-import           Common.Request
+import           Common.Api
 
 -- | Our widget type has reader/state capabilities tacked on
 type TodoWidget t m a = MonadWidget t m => ReaderT (TodoEnv t) m a
@@ -38,7 +38,6 @@ data TodoEnv t = TodoEnv
 
 -- | Run our main TodoWidget by creating the environment for it
 -- TODO buffer requests while connection is closed
--- TODO let ws url be fromMaybe "localhost" <$> lookupEnv "TODO_HOST_URL" ++ ws://:3000
 -- TODO don't use reconnect == True, just handle this ourselves!
       -- -- actually this doesnt seem to work even when false..
 runApp

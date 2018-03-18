@@ -17,7 +17,7 @@ import           Data.Acid                    (AcidState)
 import qualified Data.Map                     as Map
 
 import           Backend.Data
-import           Common.Request
+import           Common.Api
 
 -- TODO should master contain a TVar (IntMap Client) ? everyone else seems to do this..
 -- If so add the field here and a connect function..

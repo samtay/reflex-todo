@@ -25,7 +25,7 @@ import qualified Network.WebSockets           as WS
 import           Backend.Data
 import           Backend.Master
 import           Backend.Server
-import           Common.Request
+import           Common.Api
 
 type ClientApp = ReaderT Client IO
 
@@ -41,13 +41,11 @@ instance (MonadIO m, MonadReader Client m) => HasConnection m where
 instance (MonadReader Client m) => HasMaster m where
   askMaster = asks _client_master
 
-
-  -- TODO consider sendListenData / sendResponseData small wrappers
 clientApp :: ClientApp ()
 clientApp = do
   -- First send the full list
   query AllItems >>= sendJSONData . WebSocketDataDown_Listen . TodoListen_ListFull . toMap
-  -- Relay state updates from other clients
+  -- Relay listener updates from all clients
   Client conn listen _ <- ask
   liftIO . void . forkIO . forever $
     atomically (readTChan listen) >>= WS.sendTextData conn . encode . WebSocketDataDown_Listen

@@ -9,7 +9,7 @@ import qualified Data.Map       as Map
 import           Reflex
 import           Reflex.Dom
 
-import           Common.Request
+import           Common.Api
 import           Common.Types
 import           Frontend.Env
 import           Frontend.Item
