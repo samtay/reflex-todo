@@ -29,6 +29,8 @@ mainStylesheet = do
     ".completed" & do
       color (rgba 88 110 117 0.66)
       textDecoration lineThrough
+  ".messages" ? do
+    marginBottom (px 10)
 
 inlineClay :: MonadWidget t m => Css -> m ()
 inlineClay = el "style" . text . toStrict . render

@@ -33,6 +33,7 @@ warp = JSaddle.Warp.run 3911 $ Reflex.Dom.Core.mainWidgetWithHead headWidget app
 appBody :: MonadWidget t m => m ()
 appBody = runApp $ do
   request <- withListHeader $ do
+    App.messageWidget
     connection <- asks _todoEnv_connection
     widgetHold App.app $ ffor (updated connection) $ \case
       Connection_Disconnected -> Static.app >> return never
@@ -55,7 +56,7 @@ headWidget = do
   mapM_ includeSemantic [ "reset" , "site" , "container" , "grid"
                         , "header" , "image" , "menu" , "divider"
                         , "segment" , "list" , "card" , "form"
-                        , "input" , "button" , "icon"
+                        , "input" , "button" , "icon", "message"
                         ]
   where
     includeSemantic component =
