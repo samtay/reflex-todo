@@ -19,7 +19,7 @@ import           Reflex.Dom.WebSocket  as WS
 
 import           Common.Api
 
--- | Our widget type has reader/state capabilities tacked on
+-- | Our widget type has reader capabilities tacked on
 type TodoWidget t m a = MonadWidget t m => ReaderT (TodoEnv t) m a
 
 -- | Connection state
@@ -29,26 +29,30 @@ data Connection
   | Connection_Disconnected -- ^ Disconnected
   deriving (Eq)
 
--- | Our env (for reading)
+-- | Our env for reading at runtime
 data TodoEnv t = TodoEnv
   { _todoEnv_connection :: Dynamic t Connection
   , _todoEnv_listen     :: Event t TodoListen
   , _todoEnv_response   :: Event t TodoResponse
   }
 
--- | Run our main TodoWidget by creating the environment for it
--- TODO buffer requests while connection is closed
--- TODO don't use reconnect == True, just handle this ourselves!
-      -- -- actually this doesnt seem to work even when false..
+-- | Run our main TodoWidget by creating the environment for it.
+-- Handles opening the web socket connection and encoding up requests,
+-- decoding down responses and other state updates.
 runApp
   :: (MonadWidget t m)
   => TodoWidget t m (Event t [TodoRequest])
   -> m ()
 runApp app = do
-  rec ws <- WS.jsonWebSocket "/" $ def { _webSocketConfig_send = encodeUp <$> request
-                                       , _webSocketConfig_reconnect = False
-                                       }
+  rec ws <- WS.jsonWebSocket "ws://localhost:3000" $
+        def { _webSocketConfig_send = encodeUp <$> leftmost
+              [ gate (current connected) request
+              , tag (current buffer) (ffilter id $ updated connected)
+              ]
+            , _webSocketConfig_reconnect = False
+            }
       (connected, connection) <- getConnectionState ws
+      buffer <- foldDyn (++) [] $ gate (current connected) request
       let recv = _webSocket_recv ws
           env = TodoEnv { _todoEnv_connection = connection
                         , _todoEnv_listen = fmapMaybe (decodeDown _WebSocketDataDown_Listen) recv
@@ -63,6 +67,7 @@ runApp app = do
     decodeDown :: Prism' WebSocketDataDown a -> Maybe WebSocketDataDown -> Maybe a
     decodeDown prism mdown = mdown >>= (^? prism)
 
+-- | Calculates current connection status from 'RawWebSocket'
 getConnectionState
   :: MonadWidget t m
   => RawWebSocket t a
