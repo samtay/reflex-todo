@@ -1,9 +1,12 @@
 module Main where
 
 import           Control.Monad.Reader (runReaderT)
+import           Data.Maybe           (fromMaybe)
+import           System.Environment   (lookupEnv)
+import           Text.Read            (readMaybe)
 
 import           Backend.Client       (Client (..), clientApp)
-import           Backend.Master       (withMaster, subscribe)
+import           Backend.Master       (subscribe, withMaster)
 import           Backend.Server       (runServer)
 
 -- | Create a "master" for handling global state and serve websocket app on
@@ -16,9 +19,10 @@ import           Backend.Server       (runServer)
 -- all the other clients. Instead of dealing with that jumble, offloading to a
 -- master allows us to separate concerns.
 main :: IO ()
-main =
+main = do
+  port <- fromMaybe 3000 <$> (readMaybe =<<) <$> lookupEnv "PORT"
   withMaster $ \master -> do
-    runServer 3000 $ \conn -> do
+    runServer port $ \conn -> do
       listener <- subscribe master
       runReaderT clientApp $ Client { _client_connection = conn
                                     , _client_listen = listener
