@@ -13,9 +13,10 @@ module Frontend.Env
 
 import           Control.Monad.Reader
 
-import           Control.Lens          (Prism', (^?))
+import           Control.Lens         (Prism', (^?))
+import           Data.Text            (Text)
 import           Reflex.Dom.Core
-import           Reflex.Dom.WebSocket  as WS
+import           Reflex.Dom.WebSocket as WS
 
 import           Common.Api
 
@@ -44,7 +45,7 @@ runApp
   => TodoWidget t m (Event t [TodoRequest])
   -> m ()
 runApp app = do
-  rec ws <- WS.jsonWebSocket "ws://localhost:3000" $
+  rec ws <- WS.jsonWebSocket appHost $
         def { _webSocketConfig_send = encodeUp <$> leftmost
               [ gate (current connected) request
               , tag (current buffer) (ffilter id $ updated connected)
@@ -90,3 +91,6 @@ getConnectionState ws = do
     , Connection_Disconnected <$ gate (not <$> current connected) checkConnection
     ]
   return (connected, connection)
+
+appHost :: Text
+appHost = "wss://reflex-todo.herokuapp.com"
