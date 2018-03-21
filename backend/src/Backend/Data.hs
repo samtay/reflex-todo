@@ -86,7 +86,7 @@ completeItem k = updateItemsWith $ \items ->
   let (mItem, st) = IntMap.updateLookupWithKey (\_ i -> Just i {_item_completed = True}) k items
   in case mItem of
        Nothing -> (Nothing, st)
-       Just i  -> (Just (k, Just i), st)
+       Just i  -> (Just (k, Just i {_item_completed = True}), st)
 
 -- | Generic update on todo items
 updateItemsWith :: (IntMap Item -> (a, IntMap Item)) -> Update TodoDb a

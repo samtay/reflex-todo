@@ -26,6 +26,7 @@ executable backend
     , stm
     , text
     , wai
+    , wai-app-static
     , wai-websockets
     , warp
     , websockets

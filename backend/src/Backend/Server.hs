@@ -10,8 +10,8 @@ import           Control.Monad                  ((>=>))
 import           Control.Monad.IO.Class         (MonadIO (..))
 
 import           Data.Aeson
-import qualified Network.HTTP.Types             as Http
 import qualified Network.Wai                    as Wai
+import qualified Network.Wai.Application.Static as Static
 import qualified Network.Wai.Handler.Warp       as Warp
 import qualified Network.Wai.Handler.WebSockets as Wai.WS
 import qualified Network.WebSockets             as WS
@@ -42,8 +42,8 @@ runServer port wsApp = do
     httpApp -- App for non-websocket requests
 
 -- | Http application
--- TODO serve ghcjs on this server
+--
+-- Serve up static ghcjs output
 httpApp :: Wai.Application
-httpApp _ respond = respond $
-  Wai.responseLBS Http.status400 [] "This server only accepts websocket requests"
+httpApp = Static.staticApp $ Static.defaultFileServerSettings "frontend.jsexe"
 

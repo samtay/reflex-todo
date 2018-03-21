@@ -17,7 +17,7 @@ ghcjs-prim-0.1.0.0-GUpdXu72Ynv3kgdbcUykWj:10752
 integer-gmp:             86805
 integer-logarithms-1.0.2-GnS00EJ2BHW1pgq9lJYSmk:3026
 keycode-0.2.2-KUMBRNYEmQtCmu6Eoa345P:10585
-main:                    337059
+main:                    357103
 primitive-0.6.1.0-DJQCGSRhr6sEACT4OLYAIv:2347
 ref-tf-0.4.0.1-6Qjbvsaiat47ht7VlAdHc1:5812
 reflex-0.5-8PrlsTQsrB4DzuwigNENyF:1380703
@@ -223,7 +223,7 @@ main
     Frontend.Env:                       46225
     Frontend.Item:                      52032
     Frontend.Static:                    36246
-    Main:                               75957
+    Main:                               96001
 
 primitive-0.6.1.0-DJQCGSRhr6sEACT4OLYAIv
     Control.Monad.Primitive:            882
@@ -328,5 +328,5 @@ vector-0.11.0.0-7TM2aXkm7ud3lQdMTxCwFV
 
 
 
-packed metadata: 1083388
+packed metadata: 1089262
 
