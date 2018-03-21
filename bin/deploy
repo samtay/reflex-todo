@@ -1,18 +1,40 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# in the future have this script deploy to ALL targets
 nix-build -o dist-ghcjs-result -A ghcjs.frontend
 
 ref=$(git rev-parse --short HEAD)
+
+echo "Deploying samtay.github.io..."
+
 tmpdir=$(mktemp -d)
 git clone --single-branch --branch gh-pages \
     git@github.com:samtay/reflex-todo.git \
     $tmpdir
 cp -R dist-ghcjs-result/bin/frontend.jsexe/* $tmpdir
-cd $tmpdir
-git add .
-git commit -m "Update ghcjs build output - $ref" || {
-  echo "No changes to deploy"
-}
-git push
+(
+  cd $tmpdir
+  git add .
+  git commit -m "Update ghcjs build output - $ref" || {
+    echo "No changes to deploy"
+  }
+  git push
+)
+
+echo "Deploying reflex-todo.herokuapp.com..."
+
+tmpdir=$(mktemp -d)
+git clone --single-branch --branch heroku \
+    git@github.com:samtay/reflex-todo.git \
+    $tmpdir
+cp -r dist-ghcjs-result/bin/frontend.jsexe $tmpdir
+cp -r backend $tmpdir
+cp -r common $tmpdir
+(
+  cd $tmpdir
+  git add .
+  git commit -m "Update heroku build - $ref" || {
+    echo "No changes to deploy"
+  }
+  git push
+)
