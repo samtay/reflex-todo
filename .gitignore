@@ -1,0 +1,6 @@
+dist*
+TAGS
+tags
+result
+backend/state
+.stack-work
