@@ -11,7 +11,8 @@ tmpdir=$(mktemp -d)
 git clone --single-branch --branch gh-pages \
     git@github.com:samtay/reflex-todo.git \
     $tmpdir
-cp -R dist-ghcjs-result/bin/frontend.jsexe/* $tmpdir
+cp -r dist-ghcjs-result/bin/frontend.jsexe/* $tmpdir
+cp -r static/root/* $tmpdir
 (
   cd $tmpdir
   git add .
@@ -28,6 +29,7 @@ git clone --single-branch --branch heroku \
     git@github.com:samtay/reflex-todo.git \
     $tmpdir
 cp -r dist-ghcjs-result/bin/frontend.jsexe $tmpdir
+cp -r static/root/* $tmpdir/frontend.jsexe
 cp -r backend $tmpdir
 cp -r common $tmpdir
 (

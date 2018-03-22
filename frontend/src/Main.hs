@@ -10,8 +10,8 @@ module Main where
 import           Data.Semigroup                   ((<>))
 
 import           Control.Monad.Reader             (asks)
-import qualified Data.Text                        as T
-import           Reflex.Dom
+import qualified Data.Map                         as Map
+import           Reflex.Dom                       hiding (link)
 #ifdef MIN_VERSION_jsaddle_warp
 import qualified Language.Javascript.JSaddle.Warp as JSaddle.Warp
 import qualified Reflex.Dom.Core
@@ -19,8 +19,8 @@ import qualified Reflex.Dom.Core
 
 import qualified Frontend.App                     as App
 import qualified Frontend.CSS                     as CSS
-import qualified Frontend.Static                  as Static
 import           Frontend.Env
+import qualified Frontend.Static                  as Static
 
 main :: IO ()
 main = Reflex.Dom.mainWidgetWithHead headWidget appBody
@@ -44,14 +44,34 @@ appBody = runApp $ do
 headWidget :: MonadWidget t m => m ()
 headWidget = do
   el "title" $ text "Reflex ToDo"
-  elAttr "meta"
-    ( "name" =: "viewport"
-   <> "content" =: T.intercalate ", " [ "width=device-width"
-                                      , "initial-scale=1.0"
-                                      , "maximum-scale=1.0"
-                                      , "user-scalable=no"
-                                      ]
-    ) blank
+  meta [ ("name", "viewport")
+       , ("content", "width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no")
+       ]
+  link [ ("rel", "apple-touch-icon")
+       , ("sizes", "180x180")
+       , ("href", "/apple-touch-icon.png")
+       ]
+  link [ ("rel", "icon")
+       , ("sizes", "32x32")
+       , ("type", "image/png")
+       , ("href", "/favicon-32x32.png")
+       ]
+  link [ ("rel", "icon")
+       , ("sizes", "16x16")
+       , ("type", "image/png")
+       , ("href", "/favicon-16x16.png")
+       ]
+  link [ ("rel", "manifest")
+       , ("href", "/site.webmanifest")
+       ]
+  link [ ("rel", "mask-icon")
+       , ("href", "/safari-pinned-tab.svg")
+       , ("color", "#00b5ad")
+       ]
+  meta [ ("name", "theme-color")
+       , ("content", "#00b5ad")
+       , ("color", "#00b5ad")
+       ]
   CSS.inlineClay CSS.mainStylesheet
   mapM_ includeSemantic [ "reset" , "site" , "container" , "grid"
                         , "header" , "image" , "menu" , "divider"
@@ -59,12 +79,15 @@ headWidget = do
                         , "input" , "button" , "icon", "message"
                         ]
   where
+    link = blankElAttr "link"
+    meta = blankElAttr "meta"
+    blankElAttr n attrs = elAttr n (Map.fromList attrs) blank
     includeSemantic component =
       let url = mconcat [ "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/components/"
                         , component
                         , ".min.css"
                         ]
-      in elAttr "link" ("rel" =: "stylesheet" <> "href" =: url) blank
+      in link [("rel", "stylesheet"), ("href", url)]
 
 withListHeader :: MonadWidget t m => m a -> m a
 withListHeader listWidget =
