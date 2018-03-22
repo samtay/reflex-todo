@@ -13,13 +13,14 @@
   android.frontend = {
     executableName = "frontend";
     applicationId = "samtay.reflex.todo";
-    displayName = "Reflex Todo Demo";
+    displayName = "Reflex ToDo";
+    resources = ./static/res;
   };
 
   ios.frontend = {
     executableName = "frontend";
     bundleIdentifier = "samtay.reflex.todo";
-    bundleName = "Reflex Todo Demo";
+    bundleName = "Reflex ToDo";
   };
 
   shells = {
