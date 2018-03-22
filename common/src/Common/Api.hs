@@ -29,7 +29,7 @@ data TodoRequest
   = TodoRequest_Create Text
   | TodoRequest_Complete Int
   | TodoRequest_Delete Int
-  deriving (Generic)
+  deriving (Generic, Show)
 
 -- | Responses to our requests. Currently just error text or silent success
 type TodoResponse = Either Text ()
@@ -39,7 +39,7 @@ type TodoResponse = Either Text ()
 data TodoListen
   = TodoListen_ListFull (Map Int Item)          -- ^ Full list is passed on initial connection
   | TodoListen_ListPatch (Map Int (Maybe Item)) -- ^ Patches are sent to an active connection
-  deriving (Generic)
+  deriving (Generic, Show)
 
 -- | The data that goes up the websocket (client -> server)
 data WebSocketDataUp
@@ -50,7 +50,7 @@ data WebSocketDataUp
 data WebSocketDataDown
   = WebSocketDataDown_Listen TodoListen
   | WebSocketDataDown_Response TodoResponse
-  deriving (Generic)
+  deriving (Generic, Show)
 
 instance ToJSON TodoRequest
 instance FromJSON TodoRequest
