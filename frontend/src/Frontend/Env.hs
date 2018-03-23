@@ -53,7 +53,7 @@ runApp app = do
             , _webSocketConfig_reconnect = False
             }
       (connected, connection) <- getConnectionState ws
-      buffer <- foldDyn (++) [] $ gate (current connected) request
+      buffer <- foldDyn (++) [] $ gate (not <$> current connected) request
       let recv = _webSocket_recv ws
           env = TodoEnv { _todoEnv_connection = connection
                         , _todoEnv_listen = fmapMaybe (decodeDown _WebSocketDataDown_Listen) recv
@@ -79,7 +79,7 @@ getConnectionState ws = do
   let open = _webSocket_open ws
       close = () <$ _webSocket_close ws
   pb <- getPostBuild
-  checkConnection <- delay 5 $ leftmost [close, pb]
+  checkConnection <- delay 10 $ leftmost [close, pb]
   connected <- holdDyn False $ leftmost
     [ True <$ open
     , False <$ close
