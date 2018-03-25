@@ -2,13 +2,16 @@
 
 
 This codebase aims to be an example for a full stack websocket-driven [reflex
-project]() of sufficient complexity. By sufficient, I mean that this should
-provide a better idea of how to start building a real-world application, of
-greater complexity than, say, a "Hello World" demonstration.
+project](https://github.com/reflex-frp/reflex-platform/blob/develop/docs/project-development.md)
+of sufficient complexity. By sufficient, I mean that this should provide a
+better idea of how to start building a real-world application, of greater
+complexity than, say, a "Hello World" demonstration.
 
-First, read the [reflex project] document (it's not long). A great starting
-point after reading that document would be ElvishJerricco's
-[reflex-project-skeleton](), which is what this codebase started from.
+First, read the [reflex
+project](https://github.com/reflex-frp/reflex-platform/blob/develop/docs/project-development.md)
+document (it's not long). A great starting point after reading that document
+would be ElvishJerricco's [reflex-project-skeleton](https://github.com/ElvishJerricco/reflex-project-skeleton), which is what this
+codebase started from.
 
 ### things of interest
 1. Some nice development scripts in [bin](./bin), for those of us less familiar
@@ -38,18 +41,11 @@ this todo list.  However, most people will probably reach for a more familiar
 database such as postgres. If postgres were being used here, there wouldn't be
 too much of a code change, but one thing would be cleaned up: *broadcasting*.
 
-Currently the backend application code here really has nothing going on in its
-"central" thread other than starting up the server. Everything else happens in
-the forked "client" threads which write to a broadcast channel and read from a
-listener channel. To me, this is a bit awkward for two reasons: each one
-listens to its own broadcast, and each one has very direct power to affect the
-sibling client threads.
-
 At work, we have an architecture using reflex, websockets, and postgres, and we
 leverage postgres NOTIFY/LISTEN so that whenever updates are made to the
 database we can parse the notification and propagate the new state directly to
 all the frontend clients. This way, each websocket connection doesn't need to
-worry about affecting all the other connections, but we still maintain a very
+worry about communicating with all the other connections, but we still maintain a very
 high level of interactivity.
 
 ### Sources
