@@ -3,7 +3,6 @@
 {-# LANGUAGE RecursiveDo           #-}
 module Frontend.Static (app) where
 
-import           Data.Map      (Map)
 import qualified Data.Map      as Map
 import           Data.Map.Misc (applyMap)
 import           Reflex

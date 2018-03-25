@@ -45,7 +45,7 @@ class HasConnection m where
 connect :: (TVar (IntMap c)) -> c -> IO Int
 connect csRef c = atomically $ do
   cs <- readTVar csRef
-  let (cid, cs') = intMapSnoc c cs
+  let (cid, cs') = intMapSnoc' c cs
   writeTVar csRef cs'
   return cid
 

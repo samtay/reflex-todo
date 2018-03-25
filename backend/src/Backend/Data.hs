@@ -65,7 +65,7 @@ addItem :: Text -> Update TodoDb (Maybe (Int, Maybe Item))
 addItem txt = do
   TodoDb items <- get
   let newItem = Item txt False
-      (newKey, items') = intMapSnoc newItem items
+      (newKey, items') = intMapSnoc' newItem items
   put $ TodoDb items'
   return $ Just (newKey, Just newItem)
 
