@@ -1,26 +1,40 @@
-# todo
+# reflex-todo [![Build Status](https://travis-ci.org/samtay/reflex-todo.svg?branch=heroku)](https://travis-ci.org/samtay/reflex-todo)
 
-5. ghci scripts
 
+This codebase aims to be an example for a full stack websocket-driven [reflex
+project]() of sufficient complexity. By sufficient, I mean that this should
+provide a better idea of how to start building a real-world application, of
+greater complexity than, say, a "Hello World" demonstration.
+
+First, read the [reflex project] document (it's not long). A great starting
+point after reading that document would be ElvishJerricco's
+[reflex-project-skeleton](), which is what this codebase started from.
+
+### things of interest
+1. Some nice development scripts in [bin](./bin), for those of us less familiar
+   with nix.
+2. A very hacky way to deploy this style of project to
+   [heroku](https://github.com/samtay/reflex-todo/tree/heroku) (forgoing nix
+   and leveraging tools built around stack).
+3. Complete configuration of Android and iOS apps, and scripts for deploying
+   them.
+4. Slides from presenting this application (coming soon).
+
+### todo
+1. Add iOS app
+2. Add bin/ scripts for android, ios, backend, etc.
 2. Perhaps capture slides of some backend / common code
-3. Show some of the new glue on the frontend
 4. Show new frontend app code
 5. Try adding a new feature, such as editing text
+6. Add active user count
 
-6. travis / circleci
-7. heroku
-8. automate all the things
-
-### Notes
-If someone is looking at this as an example of how they might set up an
-application with more complexity, keep a few things in mind when reading this
-codebase.
-
-#### Data Storage
-I selfishly chose to try out
-[acid-state](https://github.com/acid-state/acid-state) for persistent data,
-because I had heard good things and was curious. Apparently it actually can
-scale quite well, but most people are probably reaching for a more familiar
+### scaling
+Some things will obviously change when trying to build an app that really
+scales. I remembered reading about
+[acid-state](https://github.com/acid-state/acid-state) in the [24 Days of
+Hackage](https://ocharles.org.uk/blog/posts/2013-12-14-24-days-of-hackage-acid-state.html)
+article so I chose to try that out here, and it fits the bill very well for
+this todo list.  However, most people will probably reach for a more familiar
 database such as postgres. If postgres were being used here, there wouldn't be
 too much of a code change, but one thing would be cleaned up: *broadcasting*.
 
