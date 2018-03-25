@@ -14,10 +14,11 @@ import           Frontend.Item
 
 app :: MonadWidget t m => m ()
 app = divClass "ui text container" $ divClass "ui segments" $ do
-  rec items <- foldDyn ($) initItems $ leftmost [ mapSnoc . mkItem <$> newItem
-                                                , applyMap <$> updateUncompletes
-                                                , applyMap <$> updateCompletes
-                                                ]
+  let mkItem t = Item t False
+  rec items <- foldDyn ($) mempty $ leftmost [ mapSnoc . mkItem <$> newItem
+                                             , applyMap <$> updateUncompletes
+                                             , applyMap <$> updateCompletes
+                                             ]
       -- Uncompleted items
       updateUncompletes <- divClass "ui segment" $
         divClass "ui big ordered relaxed divided list" $ do
@@ -29,10 +30,3 @@ app = divClass "ui text container" $ divClass "ui segments" $ do
         divClass "ui big relaxed divided list" $ do
           listViewWithKey (Map.filter _item_completed <$> items) drawItem
   return ()
-  where
-    mkItem t = Item t False
-    initItems = Map.fromList $ zip [1..] $ fmap mkItem
-      [ "Send app store links to the FP meetup"
-      , "RSVP to the FP meetup"
-      , "Shower"
-      ]
