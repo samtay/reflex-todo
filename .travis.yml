@@ -1,0 +1,2 @@
+language: nix
+script: nix-shell default.nix -A shells.ghc --run "cabal new-test backend"
