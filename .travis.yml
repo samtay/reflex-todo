@@ -1,5 +1,5 @@
 language: haskell
 ghc:
   - "8.0"
-install: cabal new-build backend
-script: cabal new-test backend
+install: cabal new-configure backend
+script: cabal new-build backend && cabal new-test backend
