@@ -6,4 +6,10 @@ case "$1" in
 esac
 
 echo -ne '\033]0;'"$package ghci"'\007'
-nix-shell default.nix -A shells.ghc --run "ghci -O0 -Wall -icommon/src -i$package/src Main" "$@"
+
+case "$package" in
+  backend) paths="-icommon/src -ibackend/src -ibackend/app" ;;
+  frontend) paths="-icommon/src -ifrontend/src" ;;
+esac
+
+nix-shell default.nix -A shells.ghc --run "ghci -O0 -Wall $paths Main"  "$@"
