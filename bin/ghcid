@@ -5,4 +5,5 @@ case "$1" in
   *)         package="frontend" ;;
 esac
 
+echo -ne '\033]0;'"$package ghcid"'\007'
 nix-shell default.nix -A shells.ghc --run "ghcid -W --restart=$package/$package.cabal -c'ghci -O0 -Wall -XNoNondecreasingIndentation -icommon/src -i$package/src Main'"

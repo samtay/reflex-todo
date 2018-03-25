@@ -22,7 +22,6 @@ import           Common.Types
 import           Frontend.Env
 import           Frontend.Item
 
--- TODO why do I have to click complete twice ???
 app :: TodoWidget t m (Event t [TodoRequest])
 app = divClass "ui text container" $ divClass "ui segments" $ do
   items <- watchTodoItems
@@ -42,7 +41,6 @@ app = divClass "ui text container" $ divClass "ui segments" $ do
                           , fmap TodoRequest_Delete <$> Map.keys <$> deletes
                           ]
 
--- TODO why are double events getting sent from server ???
 watchTodoItems :: TodoWidget t m (Dynamic t (Map Int Item))
 watchTodoItems = do
   listUpdates <- asks _todoEnv_listen

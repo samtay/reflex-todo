@@ -22,6 +22,7 @@ import           Data.SafeCopy          (base, deriveSafeCopy)
 import           Data.Text              (Text)
 
 import           Common.Types
+import           Common.Misc
 
 --------------------------------------------------
 -- Database definition and interacting functions
@@ -31,15 +32,15 @@ data TodoDb = TodoDb
   } deriving (Typeable)
 
 -- | Class for issuing commands against a contextual db
-class MonadIO m => HasAcidState db m where
+class HasAcidState db m where
   askDb :: m (AcidState db)
 
-query :: (EventState event ~ db, HasAcidState db m, QueryEvent event)
+query :: (EventState event ~ db, QueryEvent event, HasAcidState db m, MonadIO m)
       => event
       -> m (EventResult event)
 query q = askDb >>= liftIO . \db -> Acid.query db q
 
-update :: (EventState event ~ db, HasAcidState db m, UpdateEvent event)
+update :: (EventState event ~ db, UpdateEvent event, HasAcidState db m, MonadIO m)
       => event
       -> m (EventResult event)
 update u = askDb >>= liftIO . \db -> Acid.update db u
@@ -64,9 +65,7 @@ addItem :: Text -> Update TodoDb (Maybe (Int, Maybe Item))
 addItem txt = do
   TodoDb items <- get
   let newItem = Item txt False
-      (newKey, items') = case IntMap.maxViewWithKey items of
-        Just ((k, _), _) -> (succ k, IntMap.insert (succ k) newItem items)
-        _                -> (0     , IntMap.singleton 0 newItem)
+      (newKey, items') = intMapSnoc newItem items
   put $ TodoDb items'
   return $ Just (newKey, Just newItem)
 

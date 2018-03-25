@@ -3,12 +3,13 @@
 {-# LANGUAGE RecursiveDo           #-}
 module Frontend.Static (app) where
 
-import           Data.Map       (Map)
-import qualified Data.Map       as Map
-import           Data.Map.Misc  (applyMap)
+import           Data.Map      (Map)
+import qualified Data.Map      as Map
+import           Data.Map.Misc (applyMap)
 import           Reflex
 import           Reflex.Dom
 
+import           Common.Misc
 import           Common.Types
 import           Frontend.Item
 
@@ -36,8 +37,3 @@ app = divClass "ui text container" $ divClass "ui segments" $ do
       , "RSVP to the FP meetup"
       , "Shower"
       ]
-
-mapSnoc :: a -> Map Int a -> Map Int a
-mapSnoc a xs = case Map.toDescList xs of
-                 (k, _) : _ -> Map.insert (succ k) a xs
-                 _          -> Map.singleton 1 a

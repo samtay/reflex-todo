@@ -11,6 +11,7 @@ cabal-version:       >=1.10
 library
   ghc-options:         -Wall -O2
   exposed-modules:     Common.Api
+                     , Common.Misc
                      , Common.Types
   hs-source-dirs:      src
   default-language:    Haskell2010

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+case "$1" in
+  b|backend) package="backend"  ;;
+  *)         package="frontend" ;;
+esac
+
+echo -ne '\033]0;'"$package ghci"'\007'
+nix-shell default.nix -A shells.ghc --run "ghci -O0 -Wall -icommon/src -i$package/src Main" "$@"
