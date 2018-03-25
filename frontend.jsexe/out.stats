@@ -5,8 +5,8 @@ attoparsec-0.13.0.2-BJIO6eO1hlR3f9983RCB7E:98906
 base:                    819905
 bytestring-0.10.8.1-9nyNRTN22ZoFzkmxPppNxP:64627
 clay-0.12.2-2u7Sqk9f2nybxBnZZUdCl:473353
-common-0.1.0.0-18nMRupKPf01hpzoqIqqeH:99888
-containers-0.5.7.1-84bgGSqjZJw8aeDIt4YHcf:275376
+common-0.1.0.0-18nMRupKPf01hpzoqIqqeH:106573
+containers-0.5.7.1-84bgGSqjZJw8aeDIt4YHcf:274568
 deepseq-1.4.2.0-AXN9m3fSihQGdKj3mivvO2:881
 dependent-map-0.2.4.0-1LGFjSUWjkGECopeg9ZX9o:117138
 dependent-sum-0.4-aR7Wnl7e196QxlHvf6vGm:12053
@@ -17,7 +17,7 @@ ghcjs-prim-0.1.0.0-GUpdXu72Ynv3kgdbcUykWj:10752
 integer-gmp:             86805
 integer-logarithms-1.0.2-GnS00EJ2BHW1pgq9lJYSmk:3026
 keycode-0.2.2-KUMBRNYEmQtCmu6Eoa345P:10585
-main:                    357103
+main:                    338725
 primitive-0.6.1.0-DJQCGSRhr6sEACT4OLYAIv:2347
 ref-tf-0.4.0.1-6Qjbvsaiat47ht7VlAdHc1:5812
 reflex-0.5-8PrlsTQsrB4DzuwigNENyF:1380703
@@ -155,12 +155,13 @@ clay-0.12.2-2u7Sqk9f2nybxBnZZUdCl
 
 common-0.1.0.0-18nMRupKPf01hpzoqIqqeH
     Common.Api:                         94599
+    Common.Misc:                        6685
     Common.Types:                       5289
 
 containers-0.5.7.1-84bgGSqjZJw8aeDIt4YHcf
     Data.IntMap.Base:                   126058
     Data.IntMap.Strict:                 39516
-    Data.Map.Base:                      97269
+    Data.Map.Base:                      96461
     Data.Map.Strict:                    12533
 
 deepseq-1.4.2.0-AXN9m3fSihQGdKj3mivvO2
@@ -220,9 +221,9 @@ keycode-0.2.2-KUMBRNYEmQtCmu6Eoa345P
 main
     Frontend.App:                       104887
     Frontend.CSS:                       21712
-    Frontend.Env:                       46225
+    Frontend.Env:                       46468
     Frontend.Item:                      52032
-    Frontend.Static:                    36246
+    Frontend.Static:                    17625
     Main:                               96001
 
 primitive-0.6.1.0-DJQCGSRhr6sEACT4OLYAIv
@@ -328,5 +329,5 @@ vector-0.11.0.0-7TM2aXkm7ud3lQdMTxCwFV
 
 
 
-packed metadata: 1089262
+packed metadata: 1086765
 
