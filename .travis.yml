@@ -1,2 +1,2 @@
 language: nix
-script: nix-shell default.nix -A shells.ghc --run "cabal new-test backend"
+script: nix-shell default.nix -A shells.ghc --run "cabal new-test backend" --option extra-binary-caches https://nixcache.reflex-frp.org
