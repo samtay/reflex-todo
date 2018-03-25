@@ -1,2 +1,4 @@
-language: nix
-script: nix-shell default.nix -A shells.ghc --run "cabal new-test backend" --option extra-binary-caches https://nixcache.reflex-frp.org
+language: haskell
+ghc:
+  - "8.0"
+script: cabal new-test backend
