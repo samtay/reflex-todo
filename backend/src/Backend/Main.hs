@@ -4,14 +4,12 @@ module Backend.Main
   ( main
   ) where
 
-import           Control.Exception      (finally)
 import           Control.Monad.IO.Class (MonadIO (..))
 import           Data.Maybe             (fromMaybe)
 import           System.Environment     (lookupEnv)
 import           Text.Read              (readMaybe)
 
-import           Control.Concurrent.STM (newTVarIO)
-import           Control.Monad.Reader   (MonadReader, ReaderT, runReaderT)
+import           Control.Monad.Reader   (MonadReader, ReaderT)
 import           Data.Aeson             (eitherDecode, encode)
 import qualified Network.WebSockets     as WS
 
@@ -32,9 +30,5 @@ main :: IO ()
 main = do
   port <- fromMaybe 3000 <$> (readMaybe =<<) <$> lookupEnv "PORT"
   Data.withTodoDb $ \db -> do
-    clients <- newTVarIO mempty
-    Server.runServer port $ \conn -> do
-      cid <- App.connect clients conn
-      finally
-        (runReaderT (unAppT App.app) $ AppContext cid conn db clients)
-        (App.disconnect clients cid)
+    connHandler <- App.mkConnectionHandler db unAppT
+    Server.runServer port connHandler

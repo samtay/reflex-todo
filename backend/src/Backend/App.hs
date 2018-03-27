@@ -10,6 +10,8 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Backend.App where
 
+import           Control.Exception      (finally)
+
 import           Control.Concurrent.STM
 import           Control.Lens           (iforM_)
 import           Control.Monad.Reader
@@ -40,18 +42,6 @@ class HasConnection m where
   type Connection m :: *
   sendData :: Connection m -> WebSocketDataDown -> m ()
   receiveData :: Connection m -> m (Either String WebSocketDataUp)
-
--- | Add a new connection to the tvar map, return the new connection's client ID
-connect :: (TVar (IntMap c)) -> c -> IO Int
-connect csRef c = atomically $ do
-  cs <- readTVar csRef
-  let (cid, cs') = intMapSnoc' c cs
-  writeTVar csRef cs'
-  return cid
-
--- | Remove a client from the list by ID
-disconnect :: (TVar (IntMap c)) -> Int -> IO ()
-disconnect csRef cid = atomically $ modifyTVar csRef $ IntMap.delete cid
 
 -- | Send message to this app context's connection handle
 tellSelf
@@ -102,7 +92,7 @@ handleTodoRequest req = do
       tellSelf . WebSocketDataDown_Response $ Right ()
       tellAll . WebSocketDataDown_Listen . TodoListen_ListPatch . uncurry Map.singleton $ patch
 
--- The "main" app function per connection thread
+-- | The app function per client
 app :: (MonadIO m, HasConnection m, MonadReader (AppContext (Connection m)) m) => m ()
 app = do
   -- First send the full list
@@ -110,8 +100,35 @@ app = do
   -- Handle requests from this client's websocket connection
   conn <- asks _app_connection
   forever $ receiveData conn >>= \case
-    Left err  -> liftIO $ putStrLn $ "Decoding error at websocket: " ++ err
+    Left err -> liftIO $ putStrLn $ "Decoding error at websocket: " ++ err
     Right (WebSocketDataUp_Request req) -> handleTodoRequest req
+
+-- | Useful utility function for taking care of spin-up boilerplate, returns
+-- the function necessary per connection thread spun up
+mkConnectionHandler
+  :: (MonadIO m, MonadReader (AppContext (Connection m)) m, HasConnection m)
+  => AcidState TodoDb                       -- ^ Database
+  -> (m () -> ReaderT (AppContext c) IO ()) -- ^ App wrapper
+  -> IO (c -> IO ())                        -- ^ Connection handler
+mkConnectionHandler db unApp = do
+  clients <- newTVarIO mempty
+  return $ \conn -> do
+    cid <- connect clients conn
+    finally
+      (runReaderT (unApp app) $ AppContext cid conn db clients)
+      (disconnect clients cid)
+
+-- | Add a new connection to the tvar map, return the new connection's client ID
+connect :: (TVar (IntMap c)) -> c -> IO Int
+connect csRef c = atomically $ do
+  cs <- readTVar csRef
+  let (cid, cs') = intMapSnoc' c cs
+  writeTVar csRef cs'
+  return cid
+
+-- | Remove a client from the list by ID
+disconnect :: (TVar (IntMap c)) -> Int -> IO ()
+disconnect csRef cid = atomically $ modifyTVar csRef $ IntMap.delete cid
 
 -- | Transform IntMap to Map Int
 toMap :: IntMap a -> Map Int a

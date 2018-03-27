@@ -53,8 +53,6 @@ withTodoDb = bracket (Acid.openLocalState (TodoDb mempty)) Acid.createCheckpoint
 -- Acid state query/update functions
 --------------------------------------------------
 
--- TODO Make all "Update"s return relevant data so we can issue smaller ws updates
-
 -- | Query for all todo items
 allItems :: Query TodoDb (IntMap Item)
 allItems = _todoDb_items <$> ask
