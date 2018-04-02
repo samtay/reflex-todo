@@ -2,6 +2,7 @@
 
 case "$1" in
   b|backend) package="backend"  ;;
+  t|test)    package="test"  ;;
   *)         package="frontend" ;;
 esac
 
@@ -10,6 +11,7 @@ echo -ne '\033]0;'"$package ghcid"'\007'
 case "$package" in
   backend) paths="-icommon/src -ibackend/src -ibackend/app" ;;
   frontend) paths="-icommon/src -ifrontend/src" ;;
+  test) paths="-icommon/src -ibackend/src -ibackend/test" ;;
 esac
 
-nix-shell default.nix -A shells.ghc --run "ghcid -W --restart=$package/$package.cabal -c'ghci -O0 -Wall -XNoNondecreasingIndentation $paths Main'"
+nix-shell default.nix -A shells.ghc --run "ghcid -W --restart=common/common.cabal --restart=frontend/frontend.cabal --restart=backend/backend.cabal -c'ghci -O0 -Wall -XNoNondecreasingIndentation $paths Main'"

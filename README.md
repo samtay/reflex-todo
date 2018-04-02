@@ -1,6 +1,5 @@
 # reflex-todo [![Build Status](https://travis-ci.org/samtay/reflex-todo.svg?branch=heroku)](https://travis-ci.org/samtay/reflex-todo)
 
-
 This codebase aims to be an example for a full stack websocket-driven [reflex
 project](https://github.com/reflex-frp/reflex-platform/blob/develop/docs/project-development.md)
 of sufficient complexity. By sufficient, I mean that this should provide a
@@ -30,6 +29,7 @@ codebase started from.
 4. Show new frontend app code
 5. Try adding a new feature, such as editing text
 6. Add active user count
+7. Add note about Requester typeclass and a GADT api
 
 ### scaling
 Some things will obviously change when trying to build an app that really

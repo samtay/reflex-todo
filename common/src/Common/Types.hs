@@ -9,7 +9,7 @@ import           Data.Text    (Text)
 data Item = Item
   { _item_text      :: Text
   , _item_completed :: Bool
-  } deriving (Generic, Show)
+  } deriving (Eq, Generic, Show)
 
 instance ToJSON Item
 instance FromJSON Item
