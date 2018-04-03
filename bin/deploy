@@ -21,7 +21,7 @@ git/squash_changes() {
     if [[ $(git status --porcelain) ]]; then
       local prev_msg="$(git log --format=%B -n1)"
       if echo "$prev_msg" | grep -q "$msg_prefix"; then
-        git commit --amend -m"$prev_msg" -m"$msg_prefix - $ref"
+        git commit --amend -m"$msg_prefix - $ref" -m"$prev_msg"
         git push -f
       else
         git commit -m "$msg_prefix - $ref"
