@@ -14,7 +14,7 @@ p/help_main() {
          build -v 1.12 --ad-hoc ios
 
   General Options:
-    --help               Display this help
+    -h|--help            Display this help
 
     -o|--bin-dir         Custom target artifact directory.
                          Defaults to dist-TARGET.
@@ -100,6 +100,7 @@ main(){
     shift
   done
 
+  $__help && die/help 0 # TODO soon there will be target specific help
   [ -z $__target ] && die/help 1 "missing target argument"
   is/fn build/$__target || die "not yet implemented!"
   [ -z $__distdir ] && __distdir="dist-$__target"

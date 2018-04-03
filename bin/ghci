@@ -1,15 +1,59 @@
 #!/usr/bin/env bash
 
-case "$1" in
-  b|backend) package="backend"  ;;
-  *)         package="frontend" ;;
-esac
+p/help_main() {
+  cat <<-EOF
 
-echo -ne '\033]0;'"$package ghci"'\007'
+  ghci utility
 
-case "$package" in
-  backend) paths="-icommon/src -ibackend/src -ibackend/app" ;;
-  frontend) paths="-icommon/src -ifrontend/src" ;;
-esac
+  Usage: ghci [PACKAGE]
 
-nix-shell default.nix -A shells.ghc --run "ghci -O0 -Wall $paths Main"  "$@"
+  Packages:
+    f|frontend (default)
+
+    b|backend
+
+EOF
+}
+
+main/ghci() {
+  echo -ne '\033]0;'"$package ghci"'\007'
+
+  local paths=
+  case "$__package" in
+    backend) paths="-icommon/src -ibackend/src -ibackend/app" ;;
+    frontend) paths="-icommon/src -ifrontend/src" ;;
+  esac
+
+  nix-shell default.nix -A shells.ghc --run "ghci -O0 -Wall $paths Main"  "$@"
+}
+
+main(){
+  set -eo pipefail
+  readonly SCRIPT_DIR="$( cd $(dirname ${BASH_SOURCE[0]}) ; pwd -P )"
+  readonly ROOT_DIR="$( cd $SCRIPT_DIR/.. ; pwd -P )"
+  . "$SCRIPT_DIR/shell-helpers.sh" || {
+    echo "shell-helpers.sh is required"
+    exit 2
+  }
+  cd $ROOT_DIR
+
+  __package="frontend"
+
+  while [ $# -ne 0 ]; do
+    case "$1" in
+      f|frontend)
+        __package="frontend" ;;
+      b|backend)
+        __package="backend" ;;
+      -h|--help)
+        die/help 0 ;;
+      *)
+        die/help 1 "unrecognized package: $1"
+    esac
+    shift
+  done
+
+  main/ghci
+}
+
+main "$@"

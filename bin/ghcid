@@ -1,17 +1,71 @@
 #!/usr/bin/env bash
 
-case "$1" in
-  b|backend) package="backend"  ;;
-  t|test)    package="test"  ;;
-  *)         package="frontend" ;;
-esac
+p/help_main() {
+  cat <<-EOF
 
-echo -ne '\033]0;'"$package ghcid"'\007'
+  ghci utility
 
-case "$package" in
-  backend) paths="-icommon/src -ibackend/src -ibackend/app" ;;
-  frontend) paths="-icommon/src -ifrontend/src" ;;
-  test) paths="-icommon/src -ibackend/src -ibackend/test" ;;
-esac
+  Usage: ghcid [PACKAGE]
 
-nix-shell default.nix -A shells.ghc --run "ghcid -W --restart=common/common.cabal --restart=frontend/frontend.cabal --restart=backend/backend.cabal -c'ghci -O0 -Wall -XNoNondecreasingIndentation $paths Main'"
+  Packages:
+    f|frontend (default)
+
+    b|backend
+
+    t|test
+
+EOF
+}
+
+main/ghcid() {
+  echo -ne '\033]0;'"$package ghcid"'\007'
+
+  local paths=
+  local restart=
+  case "$__package" in
+    frontend)
+      paths="-icommon/src -ifrontend/src"
+      restart="--restart=frontend/frontend.cabal" ;;
+    backend)
+      paths="-icommon/src -ibackend/src -ibackend/app"
+      restart="--restart=backend/backend.cabal" ;;
+    test)
+      paths="-icommon/src -ibackend/src -ibackend/test"
+      restart="--restart=backend/backend.cabal" ;;
+  esac
+
+  nix-shell default.nix -A shells.ghc --run "ghcid -W --restart=common/common.cabal $restart -c'ghci -O0 -Wall -XNoNondecreasingIndentation $paths Main'"
+}
+
+main(){
+  set -eo pipefail
+  readonly SCRIPT_DIR="$( cd $(dirname ${BASH_SOURCE[0]}) ; pwd -P )"
+  readonly ROOT_DIR="$( cd $SCRIPT_DIR/.. ; pwd -P )"
+  . "$SCRIPT_DIR/shell-helpers.sh" || {
+    echo "shell-helpers.sh is required"
+    exit 2
+  }
+  cd $ROOT_DIR
+
+  __package="frontend"
+
+  while [ $# -ne 0 ]; do
+    case "$1" in
+      f|frontend)
+        __package="frontend" ;;
+      b|backend)
+        __package="backend" ;;
+      t|test)
+        __package="test" ;;
+      -h|--help)
+        die/help 0 ;;
+      *)
+        die/help 1 "unrecognized package: $1"
+    esac
+    shift
+  done
+
+  main/ghcid
+}
+
+main "$@"
