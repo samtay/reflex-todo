@@ -59,6 +59,5 @@ test-suite test-backend
     , hspec
     , lens
     , mtl
-    , reflex
     , stm
     , text

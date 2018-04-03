@@ -5,6 +5,7 @@
 module Main where
 
 import           Control.Concurrent
+import           Data.Either            (isLeft)
 import           Data.Maybe             (catMaybes)
 
 import           Control.Concurrent.STM
@@ -14,7 +15,6 @@ import qualified Data.Acid              as Acid
 import qualified Data.Acid.Memory       as Acid
 import           Data.Map               (Map, (!))
 import qualified Data.Map               as Map
-import           Data.Map.Misc          (applyMap)
 import           Data.Text              (Text)
 import           Test.Hspec
 
@@ -193,6 +193,25 @@ countEithers =
   let part (Left _) (l, r)  = (l + 1, r)
       part (Right _) (l, r) = (l, r + 1)
   in foldr part (0, 0)
+
+-- | Duped from reflex because there is no 0.5 release available for stack...
+applyMap :: Ord k => Map k (Maybe v) -> Map k v -> Map k v
+applyMap patch old = insertions `Map.union` (old `Map.difference` deletions)
+  where
+    (deletions, insertions) = mapPartitionEithers $ maybeToEither <$> patch
+    maybeToEither = \case
+      Nothing -> Left ()
+      Just r -> Right r
+
+-- | Duped from reflex because there is no 0.5 release available for stack...
+mapPartitionEithers :: Map k (Either a b) -> (Map k a, Map k b)
+mapPartitionEithers m = (fromLeft <$> ls, fromRight <$> rs)
+  where
+    (ls, rs) = Map.partition isLeft m
+    fromLeft (Left l) = l
+    fromLeft _ = error "mapPartitionEithers: fromLeft received a Right value; this should be impossible"
+    fromRight (Right r) = r
+    fromRight _ = error "mapPartitionEithers: fromRight received a Left value; this should be impossible"
 
 -- | Multiply microsends to make 0.1s units
 t :: Int -> Int
