@@ -1,42 +1,60 @@
 #!/usr/bin/env bash
 set -euo pipefail
+readonly SCRIPT_DIR="$( cd $(dirname ${BASH_SOURCE[0]}) ; pwd -P )"
+readonly ROOT_DIR="$( cd $SCRIPT_DIR/.. ; pwd -P )"
+. "$SCRIPT_DIR/shell-helpers.sh" || {
+  echo "shell-helpers.sh is required"
+  exit 2
+}
+cd $ROOT_DIR
 
-nix-build -o dist-ghcjs-result -A ghcjs.frontend
+./bin/build frontend
 
 ref=$(git rev-parse --short HEAD)
-
-echo "Deploying samtay.github.io..."
-
 tmpdir=$(mktemp -d)
+
+p/notice "Deploying samtay.github.io..."
+
 git clone --single-branch --branch gh-pages \
     git@github.com:samtay/reflex-todo.git \
     $tmpdir
-cp -r dist-ghcjs-result/bin/frontend.jsexe/* $tmpdir
-cp -r static/root/* $tmpdir
+cp -r dist-frontend/* $tmpdir
 (
   cd $tmpdir
+  git status
+  sleep 5
   git add .
   git commit -m "Update ghcjs build output - $ref" || {
-    echo "No changes to deploy"
+    p/log "No changes to deploy"
   }
   git push
 )
 
-echo "Deploying reflex-todo.herokuapp.com..."
+p/notice "Deploying reflex-todo.herokuapp.com..."
 
-tmpdir=$(mktemp -d)
+rm -rf $tmpdir
+mkdir $tmpdir
+
 git clone --single-branch --branch heroku \
     git@github.com:samtay/reflex-todo.git \
     $tmpdir
-cp -r dist-ghcjs-result/bin/frontend.jsexe $tmpdir
-cp -r static/root/* $tmpdir/frontend.jsexe
+
+cp -r dist-frontend/* $tmpdir/frontend.jsexe
 cp -r backend $tmpdir
 cp -r common $tmpdir
 (
   cd $tmpdir
+  git status
+  sleep 5
   git add .
   git commit -m "Update heroku build - $ref" || {
-    echo "No changes to deploy"
+    p/log "No changes to deploy"
   }
   git push
 )
+
+cleanup() {
+  rm -rf "$tmpdir"
+}
+
+trap cleanup EXIT

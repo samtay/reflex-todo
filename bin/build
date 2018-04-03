@@ -7,8 +7,8 @@ p/help_main() {
 
   Usage: build [OPTIONS] TARGET
 
-         # build webapp (html, js, etc.)
-         build webapp
+         # build frontend (html, js, etc.)
+         build frontend
 
          # build adhoc ios app
          build -v 1.12 --ad-hoc ios
@@ -92,7 +92,7 @@ main(){
         __version="$2" ; shift ;;
       -o|--bin-dir)
         __distdir="$2" ; shift ;;
-      webapp|ios|android|backend)
+      frontend|ios|android|backend)
         __target="$1" ;;
       *)
         die/help 1 "unrecognized argument: $1"
