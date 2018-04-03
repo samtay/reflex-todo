@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+
+p/help_main() {
+  cat <<-EOF
+
+  Build utility
+
+  Usage: build [OPTIONS] TARGET
+
+         # build webapp (html, js, etc.)
+         build webapp
+
+         # build adhoc ios app
+         build -v 1.12 --ad-hoc ios
+
+  General Options:
+    --help               Display this help
+
+    -o|--bin-dir         Custom target artifact directory.
+                         Defaults to dist-TARGET.
+
+    -v|--version         Set version (useful for production apps)
+
+  iOS Options:
+    TODO local, ad-hoc, prod
+
+  Android Options:
+    TODO prod options
+
+  Targets:
+    frontend             Build frontend webapp via GHCJS
+
+    ios                  Build ios app. By default, attempts to deploy
+                         to USB connected Apple device.
+
+    android              Build android app
+
+    backend              Build backend server
+
+EOF
+}
+
+build/android() {
+  cleanup() {
+    file/sed_inplace "s/-- jsaddle-warp/jsaddle-warp/g" "frontend/frontend.cabal"
+  }
+  trap cleanup EXIT
+  file/sed_inplace "s/jsaddle-warp/-- jsaddle-warp/g" "frontend/frontend.cabal"
+  nix-build -o $__workingdir -A android.frontend
+  cp -r $__workingdir/android-app-debug.apk $__distdir/android-app.apk
+}
+
+build/frontend() {
+  nix-build -o $__workingdir -A ghcjs.frontend
+  cp -r $__workingdir/bin/frontend.jsexe/* $__distdir
+  cp -r static/root/* $__distdir
+}
+
+util/fix-perms() {
+  local dir="$1"
+  find $dir -type f -exec chmod 644 {} \;
+  find $dir -type d -exec chmod 775 {} \;
+}
+
+main(){
+  set -eo pipefail
+  readonly SCRIPT_DIR="$( cd $(dirname ${BASH_SOURCE[0]}) ; pwd -P )"
+  readonly ROOT_DIR="$( cd $SCRIPT_DIR/.. ; pwd -P )"
+  . "$SCRIPT_DIR/shell-helpers.sh" || {
+    echo "shell-helpers.sh is required"
+    exit 2
+  }
+  cd $ROOT_DIR
+
+  # globals
+  __help=false
+  __workingdir=/tmp/reflex-todo-tmp-dir
+  __version=
+  __target=
+  __distdir=
+
+  # android opts
+
+  # parse arguments
+  args/normalize_flags_first "v" "$@"
+  set -- "${__argv[@]}"
+  while [ $# -ne 0 ]; do
+    case "$1" in
+      -h|--help)
+        __help=true ;;
+      -v|--version)
+        __version="$2" ; shift ;;
+      -o|--bin-dir)
+        __distdir="$2" ; shift ;;
+      webapp|ios|android|backend)
+        __target="$1" ;;
+      *)
+        die/help 1 "unrecognized argument: $1"
+    esac
+    shift
+  done
+
+  [ -z $__target ] && die/help 1 "missing target argument"
+  is/fn build/$__target || die "not yet implemented!"
+  [ -z $__distdir ] && __distdir="dist-$__target"
+  rm -rf $__workingdir
+  mkdir -p $__distdir
+  build/$__target
+  util/fix-perms $__distdir
+  rm -rf $__workingdir
+}
+
+main "$@"

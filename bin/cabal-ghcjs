@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+nix-shell default.nix -A shells.ghcjs --add-root dist-ghcjs/gc-roots/gc-root --indirect --run "cabal --project-file=cabal-ghcjs.project --builddir=dist-ghcjs $(printf "%q " "$@")"
