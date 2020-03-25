@@ -1,4 +1,4 @@
-# reflex-todo [![Build Status](https://travis-ci.org/samtay/reflex-todo.svg?branch=heroku)](https://travis-ci.org/samtay/reflex-todo) [![Heroku](https://heroku-badge.herokuapp.com/?app=reflex-todo&svg=1)](https://reflex-todo.herokuapp.com/)
+# reflex-todo [![Build Status](https://travis-ci.org/samtay/reflex-todo.svg?branch=heroku)](https://travis-ci.org/samtay/reflex-todo) [![Heroku](https://img.shields.io/badge/heroku-deployed-success)](https://reflex-todo.herokuapp.com/)
 
 This codebase aims to be an example for a full stack websocket-driven [reflex
 project](https://github.com/reflex-frp/reflex-platform/blob/develop/docs/project-development.md)
